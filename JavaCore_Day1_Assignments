@@ -1,0 +1,124 @@
+//---------------------------Assignment 1----------------------
+import java.util.Scanner;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.prinln("Enter the no. of units");
+        int units  =  sc.nextInt();
+        double price =0.0;
+        if(units<=100) price =1.20 * units;
+        else if (units>=100 && units<=300)
+            price =120 +(units-100)*2;
+        else if(units>300)
+            price =520 + (units-300)*3;
+        System.out.println("You bill price is: "+price);
+    }
+}
+
+
+//----------------------Assignment 2---------------------------
+
+public class Solution {
+
+    public static void main(String[] args) {
+        int runs[][] = {{1,0,0,2,0,1},
+                        {4,1,0,3,0,0},
+                        {6,6,4,0,3,1},
+                        {3,1,4,1,6,1},
+                        {2,4,0,2,0,2} };
+        int scores[] = new int[6];
+        // scores array is used to store no of 0s, 1s, 2s, 3s, 4s and 6s
+        //  Index                               0   1   2   3   4     5
+        int totalRuns = 0;
+        for(int i=0;i<5;i++){
+            for(int j=0;j<6;j++){
+                int x= runs[i][j];
+                totalRuns += x;
+                switch(x){
+                    case 0: scores[0]++;
+                            break;
+                    case 1: scores[1]++;
+                            break;
+                    case 2: scores[2]++;
+                            break;
+                    case 3: scores[3]++;
+                            break;
+                    case 4: scores[4]++;
+                            break;
+                    case 6: scores[5]++;
+                            break;
+                }
+            }
+        }
+        double strikeRate = totalRuns/6;
+        System.out.println("Total Runs are: "+totalRuns);
+        System.out.println(scores[0]+" 0s, "+scores[1]+" 1s, "+scores[2]+" 2s, "+
+                        scores[3]+" 3s, "+scores[4]+" 4s, "+scores[5]+" 6s, ");
+        System.out.println("The Strike Rate is: "+strikeRate);
+        
+    }
+}
+
+
+//---------------------------Assignment 5-------------------------------
+class Account{
+    private long accountNo;
+    private double accountBalance;
+    private String accountPassword;
+    private static String bankName="HDFC";
+    
+    Account(long accountNo, double accountBalance, String accountPassword){
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance;
+        this.accountPassword = accountPassword;
+    }
+    
+    void displayAccount(){
+        System.out.println("-------Account Details----------");
+        System.out.println("Account No.:        "+accountNo);
+        System.out.println("Account Balance:    "+accountBalance);
+        System.out.println("Account Password:   "+accountPassword);
+        System.out.println("Bank Name:          "+Account.bankName);
+        System.out.println("---------------------------------");
+    }
+    
+    void setAccountNo(long accountNo){
+        this.accountNo = accountNo;
+    }
+    void setAccountBalance(double accountBalance){
+        this.accountBalance = accountBalance;
+    }
+    void setAccountPassword(String accountPassword){
+        this.accountPassword = accountPassword;
+    }
+    static void setBankName(String bankName){
+        Account.bankName = bankName;
+    }
+    
+    long getAccountNo(){
+        return accountNo;
+    }
+    double getAccountBalance(){
+        return accountBalance;
+    }
+    String getAccountPassword(){
+        return accountPassword;
+    }
+    static String getBankName(){
+        return bankName;
+    }
+}
+
+public class Solution {
+
+    public static void main(String[] args) {
+        Account a = new Account(123456789, 45000.00, "krati123");
+        a.displayAccount();
+        Account.setBankName("ICICI");
+        a.setPassword("newpass")
+        a.displayAccount();
+        
+    }
+}
