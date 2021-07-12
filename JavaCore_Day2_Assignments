@@ -1,0 +1,256 @@
+//----------------------------------------------------------------------------------------
+//---------------------------------Assignment1---------------------------------------------
+class Account{
+    private long accountNo;
+    private double accountBalance;
+    private String accountPassword;
+    private static String bankName="HDFC";
+    
+    Account(long accountNo, double accountBalance, String accountPassword){
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance;
+        this.accountPassword = accountPassword;
+    }
+    
+    void displayAccount(){
+        System.out.println("-------Account Details----------");
+        System.out.println("Account No.:        "+accountNo);
+        System.out.println("Account Balance:    "+accountBalance);
+        System.out.println("Account Password:   "+accountPassword);
+        System.out.println("Bank Name:          "+Account.bankName);
+    }
+    
+    void setAccountNo(long accountNo){
+        this.accountNo = accountNo;
+    }
+    void setAccountBalance(double accountBalance){
+        this.accountBalance = accountBalance;
+    }
+    void setAccountPassword(String accountPassword){
+        this.accountPassword = accountPassword;
+    }
+    static void setBankName(String bankName){
+        Account.bankName = bankName;
+    }
+    
+    long getAccountNo(){
+        return accountNo;
+    }
+    double getAccountBalance(){
+        return accountBalance;
+    }
+    String getAccountPassword(){
+        return accountPassword;
+    }
+    static String getBankName(){
+        return bankName;
+    }
+}
+
+class SavingsAccount extends Account{
+    private double minimumBalance;
+    
+    SavingsAccount(long accountNo, double accountBalance, String accountPassword,
+                    double minimumBalance){
+        super(accountNo, accountBalance, accountPassword);
+        this.minimumBalance = minimumBalance;
+    }
+    
+    void displayAccount(){
+        super.displayAccount();
+        System.out.println("Minimum Balance:      "+minimumBalance);
+        System.out.println("---------------------------------");
+    }
+}
+
+class CurrentAccount extends Account{
+    private double overdraftLimitAmount;
+    
+    CurrentAccount(long accountNo, double accountBalance, String accountPassword,
+                    double overdraftLimitAmount){
+        super(accountNo, accountBalance, accountPassword);
+        this.overdraftLimitAmount = overdraftLimitAmount;
+    }
+    void displayAccount(){
+        super.displayAccount();
+        System.out.println("Minimum Balance:     "+overdraftLimitAmount);
+        System.out.println("---------------------------------");
+    }
+}
+
+
+public class Solution {
+
+    public static void main(String[] args) {
+        SavingsAccount sa = new SavingsAccount(789456789, 60000.00, "hello",0.0);
+        CurrentAccount ca = new CurrentAccount(123456789, 45000.00, "krati123",100000.00);
+        sa.displayAccount();
+        ca.displayAccount();
+        
+    }
+}
+
+//-----------------------------------------------Assignment2-------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------
+abstract class Account{
+    long accountNo;
+    double accountBalance;
+    String accountPassword;
+    static String bankName="HDFC";
+    
+    abstract void withdraw(double amount);
+    
+}
+
+class SavingsAccount extends Account{
+    private double minimumBalance;
+    
+    SavingsAccount(long accountNo, double accountBalance, String accountPassword,
+                    double minimumBalance){
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance;
+        this.accountPassword = accountPassword;
+        this.minimumBalance = minimumBalance;
+    }
+    
+    public void withdraw(double amount){
+        accountBalance-=amount;
+        System.out.println("Amount Withdrawn "+amount);
+        System.out.println("Account Balance "+accountBalance
+                        +"\n-------------------------------------");
+    }   
+}
+
+class CurrentAccount extends Account{
+    private double overdraftLimitAmount;
+    
+    CurrentAccount(long accountNo, double accountBalance, String accountPassword,
+                    double overdraftLimitAmount){
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance;
+        this.accountPassword = accountPassword;
+        this.overdraftLimitAmount = overdraftLimitAmount;
+    }
+    public void withdraw(double amount){
+        accountBalance-=amount;
+        overdraftLimitAmount-=amount;
+        System.out.println("Amount Withdrawn "+amount);
+        System.out.println("Account Balance "+accountBalance);
+        System.out.println("OverdraftLimitAmount "+overdraftLimitAmount
+                            +"\n----------------------------------");
+    }
+    
+}
+
+public class Solution {
+
+    public static void main(String[] args) {
+        SavingsAccount sa = new SavingsAccount(789456789, 60000.00, "hello",0.0);
+        CurrentAccount ca = new CurrentAccount(123456789, 45000.00, "krati123",30000.00);
+        sa.withdraw(5000);
+        ca.withdraw(12000);
+        
+    }
+}
+
+
+
+//----------------------------------------------Assignment3---------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------
+interface ATM{
+    void withdraw(int accountNumber, double amount);
+    void changePassword(int accountNumber, String oldPassword, String newPassword);
+    void checkBalance();
+}
+class SbiATM implements ATM{
+    int accountNumber;
+    double balance;
+    String password;
+    
+    SbiATM(int accountNumber, double balance, String password){
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.password = password;
+    }
+    
+    public void withdraw(int accountNumber, double amount){
+        if(this.accountNumber==accountNumber){
+            balance-=amount;
+            System.out.println("Amount Withdrawn "+amount);
+            System.out.println("Account Balance "+balance);
+        }
+        else{
+            System.out.println("Wrong Account Number!");
+        }
+    }
+    public void changePassword(int accountNumber, String oldPassword, String newPassword){
+        if(this.accountNumber==accountNumber){
+            if(oldPassword == password){
+                password = newPassword;
+                System.out.println("Password changed successfully!");
+            }
+            else
+                System.out.println("Invalid Password!");
+        }
+        else{
+            System.out.println("Wrong Account Number!");
+        }
+    }
+    public void checkBalance(){
+        System.out.println("Account Balance "+balance
+                    +"\n-------------------------------------------");
+    }
+}
+class IciciATM implements ATM{
+    int accountNumber;
+    double balance;
+    String password;
+    
+    IciciATM(int accountNumber, double balance, String password){
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.password = password;
+    }
+    
+    public void withdraw(int accountNumber, double amount){
+        if(this.accountNumber==accountNumber){
+            balance-=amount;
+            System.out.println("Amount Withdrawn "+amount);
+            System.out.println("Account Balance "+balance);
+        }
+        else{
+            System.out.println("Wrong Account Number!");
+        }
+    }
+    public void changePassword(int accountNumber, String oldPassword, String newPassword){
+        if(this.accountNumber==accountNumber){
+            if(oldPassword == password){
+                password = newPassword;
+                System.out.println("Password changed successfully!");
+            }
+            else
+                System.out.println("Invalid Password!");
+        }
+        else{
+            System.out.println("Wrong Account Number!");
+        }
+    }
+    public void checkBalance(){
+        System.out.println("Account Balance "+balance
+                    +"\n-------------------------------------------");
+    }
+}
+
+public class Solution {
+
+    public static void main(String[] args) {
+        SbiATM sa = new SbiATM(1234789,70000.0 ,"qwerty");
+        IciciATM ia = new IciciATM(8756492,200000.0 ,"cvbnm");
+        sa.withdraw(1234789,5000);
+        sa.changePassword(1234789,"qwerty","dfghj");
+        sa.checkBalance();
+        ia.withdraw(8756492,15000);
+        ia.changePassword(8756492,"cvbnm","poiuy");
+        ia.checkBalance();
+    }
+}
