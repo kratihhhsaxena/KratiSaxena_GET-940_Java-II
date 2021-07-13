@@ -1,0 +1,164 @@
+//------------------------------------------Assignment1---------------------------------------------
+class InvalidAmountException extends Exception{
+    InvalidAmountException(String str){
+        super(str);
+    }
+}
+
+class InsufficientFundException extends Exception{
+    InsufficientFundException(String str){
+        super(str);
+    }
+}
+       
+public class Solution {
+
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        double balance = 200000.00;
+        double amount = s.nextInt();
+        try{
+            if(amount<0)
+                throw new InvalidAmountException("Invalid Amount Exception: "+
+                            "Amount cannot be less than zero");
+            if(amount>balance)
+                throw new InsufficientFundException("Insufficient Fund Exception: "+
+                            "amount cannot be greater than current balance");
+                            
+            balance-=amount;
+            System.out.println("Transaction Successful, current balance is: "+balance);
+        }
+        catch(InvalidAmountException e){
+            e.printStackTrace();
+        }
+        catch(InsufficientFundException e){
+            e.printStackTrace();
+        }
+    }
+}
+//-------------------------------------------------------------------------------------------------------------
+
+//-----------------------------------------------Assignment2--------------------------------------------------
+import java.util.*;
+
+class Account{
+    int accountNo;
+    double accountBalance;
+    String accountPassword;
+    static String bankName="HDFC";
+    
+    Account(int accountNo, double accountBalance, String accountPassword){
+        this.accountNo = accountNo;
+        this.accountBalance = accountBalance;
+        this.accountPassword = accountPassword;
+    }
+    
+    void displayAccount(){
+        System.out.println("-------Account Details----------");
+        System.out.println("Account No.:        "+accountNo);
+        System.out.println("Account Balance:    "+accountBalance);
+        System.out.println("Account Password:   "+accountPassword);
+        System.out.println("Bank Name:          "+Account.bankName);
+        System.out.println("---------------------------------");
+    }
+}
+
+interface AccountDao{
+    void addAnAccount(Account a);
+    void withdraw(int accountNo, double amount);
+    void checkBalance();
+    void changePassword(int accountNo, String oldPassword, String newPassword);
+    List<Account> viewAllAccounts();
+    void getAccountDetails(int accountNo);
+}
+
+class InMemoryAccountDaoImpl implements AccountDao{
+    static ArrayList<Account> al = new ArrayList<Account>();
+    public void addAnAccount(Account a){
+        al.add(a);
+    }
+    public void withdraw(int accountNo, double amount){
+        Iterator<Account> it = al.iterator();
+        boolean found=false;
+        while(it.hasNext()){
+            Account curr = it.next();
+            if(curr.accountNo==accountNo){
+                curr.accountBalance-=amount;
+                System.out.println("Withdrawl Successful!");
+                found= true; break;
+            }
+        }
+        if(!found) System.out.println("Account Not Found");
+    }
+    public void checkBalance(){
+        Iterator<Account> it = al.iterator();
+        while(it.hasNext()){
+            Account curr = it.next();
+            System.out.println("AccountNo: "+curr.accountNo+"Balance is: "+curr.accountBalance);
+        }
+    }
+     public void changePassword(int accountNumber, String oldPassword, String newPassword){
+        Iterator<Account> it = al.iterator();
+        boolean found=false;
+        while(it.hasNext()){
+            Account curr = it.next();
+            if(curr.accountNo==accountNumber){
+                if(oldPassword == curr.accountPassword){
+                    curr.accountPassword = newPassword;
+                    System.out.println("Password changed successfully!");
+                }
+                else
+                    System.out.println("Invalid Password!");
+                found=true; break;
+            }
+        
+        }   
+        if(!found) System.out.println("Account Not Found");
+    }
+    public List<Account> viewAllAccounts(){
+        return al;
+    }
+    public void getAccountDetails(int accountNo){
+        Iterator<Account> it = al.iterator();
+        boolean found=false;
+        while(it.hasNext()){
+            Account curr = it.next();
+            if(curr.accountNo==accountNo){
+                curr.displayAccount();
+                found= true; break;
+            }
+        }
+        if(!found) System.out.println("Account Not Found");
+    }
+}
+       
+public class Solution {
+
+    public static void main(String[] args) {
+        Account a1 = new Account(12345,25000.0,"qwewr");
+        Account a2 = new Account(11111,11000.0,"asdf");
+        Account a3 = new Account(22222,22000.0,"qwewr");
+        Account a4 = new Account(33333,33000.0,"fghjr");
+        Account a5 = new Account(44444,44000.0,"ertyr");
+        InMemoryAccountDaoImpl ima = new InMemoryAccountDaoImpl();
+        ima.addAnAccount(a1);
+        ima.addAnAccount(a2);
+        ima.addAnAccount(a3);
+        ima.addAnAccount(a4);
+        ima.addAnAccount(a5);
+        
+        ima.withdraw(22222,5000.0);
+        ima.checkBalance();
+        ima.changePassword(12345,"qwewr","poiuy");
+        
+        List<Account> la = ima.viewAllAccounts();
+        Iterator<Account> ia = la.iterator();
+        while(ia.hasNext()){
+            ia.next().displayAccount();
+        }
+        
+        ima.getAccountDetails(44444);
+        
+    }
+}
+//----------------------------------------------------------------------------------------------------------
