@@ -1,0 +1,220 @@
+//----------------------------Day4Assignment1.java--------------------------------------------
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
+
+//import dept.exceptions.DepartmentAlreadyExists;
+import oracle.jdbc.OracleDriver;
+
+class AccountDaoImpl implements AccountDao{
+    static ArrayList<Account> al = new ArrayList<Account>();
+    static Connection conn;
+    static Scanner sc = new Scanner(System.in);
+    
+    public void addAnAccount(Account a){
+        //al.add(a);
+    	try {
+    	String query = "Insert into account values(?,?,?)";
+		PreparedStatement ps = conn.prepareStatement(query);
+		ps.setInt(1,a.accountNo);
+		ps.setDouble(2, a.accountBalance);
+		ps.setString(3, a.accountPassword);
+		Statement st = conn.createStatement();
+		ResultSet rs = st.executeQuery("Select * from account where acno="+a.accountNo);
+		if(rs.next()) {
+			throw new Exception("addAnAccount(Account a): account number entered already exits!!!");
+		}
+		int r = ps.executeUpdate();
+		System.out.println("Account added Successfully!");
+    	}
+    	catch(Exception e) {
+    		e.printStackTrace();
+    	}
+
+    }
+    
+    public void withdraw(int accountNo, double amount){
+    	try {
+    		if(amount<0)
+    			throw new Exception("withdraw(int accountNo, double amount)"
+    					+ "\nAmount cannot be negative!!!");
+    		Statement st = conn.createStatement();
+    		ResultSet rs = st.executeQuery("Select * from account where acno="+accountNo);
+    		
+    		if(rs.next()) {
+    			if(rs.getDouble(2)>amount) {
+    				String query = "update account set bal= bal- "+amount+" where acno="+accountNo;
+    				Statement ps = conn.createStatement();
+    				int r = ps.executeUpdate(query);
+    				//System.out.println(r);
+    				if(r==1) System.out.println("Withdrawl Successful!\n");
+    			}
+    			else 
+    				throw new Exception("withdraw(int accountNo, double amount)"
+    					+ "\nInsufficient Funds!!!");
+    		}
+    		else{
+    			throw new Exception("withdraw(int accountNo, double amount)"
+    					+ "\nInvalid Account No!!");
+    		}
+    	 }
+    	 catch(Exception e) {
+    		 e.printStackTrace();
+    	 }    
+    }
+    
+    public void checkBalance(){
+    	al = (ArrayList<Account>) viewAllAccounts();
+        Iterator<Account> it = al.iterator();
+        while(it.hasNext()){
+            Account curr = it.next();
+            System.out.println("AccountNo: "+curr.accountNo+" Balance is: "+curr.accountBalance);
+        }
+    }
+     public void changePassword(int accountNumber, String oldPassword, String newPassword){
+    	 try {
+    		Statement st = conn.createStatement();
+    		ResultSet rs = st.executeQuery("Select * from account where acno="+accountNumber
+    				+ " and pass = '"+oldPassword+"'");
+    		
+    		if(rs.next()) {
+    			String query = "Update account set pass = '"+newPassword+"' where acno ="+accountNumber;
+    			Statement ps = conn.createStatement();
+    			int r = ps.executeUpdate(query);
+    			if(r==1) System.out.println("Password Changed Succefully\n");
+    		}
+    		else{
+    			throw new Exception("changePassword(int accountNumber, String oldPassword, String newPassword)"
+    					+ "\nInvalid Account No or Password!!");
+    		}
+    	 }
+    	 catch(Exception e) {
+    		 e.printStackTrace();
+    	 }
+        
+    }
+    public List<Account> viewAllAccounts(){
+    	al = new ArrayList<Account>();
+    	try {
+    		Statement st = conn.createStatement();
+    		ResultSet rs = st.executeQuery("Select * from account");
+    		System.out.println("----");
+    		while(rs.next()) {
+    			al.add(new Account(rs.getInt(1),rs.getDouble(2),rs.getString(3)));
+    		}
+    	}
+    	catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    	return al;
+    }
+    public void getAccountDetails(int accountNo){
+    	try {
+    		boolean notfound=true;
+    		Statement st = conn.createStatement();
+    		ResultSet rs = st.executeQuery("Select * from account where acno="+accountNo);
+    		while(rs.next()) {
+    			notfound=false;
+    			System.out.println("----------Account Details------------");
+    			System.out.println("Account No: 		"+rs.getInt(1));
+    			System.out.println("Account Balance: 	"+rs.getDouble(2));
+    			System.out.println("Account Password: 	"+rs.getString(3));
+    			System.out.println("Bank Name:  		"+Account.bankName);
+    			System.out.println("--------------------------------------");
+    		}
+    		if(notfound)
+    			throw new Exception("getAccountDetails(int accountNo)"
+    					+ "\nInvalid Account No!!");
+    	}
+    	catch(Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+}
+public class Day4Assignment1 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		try {
+			Scanner sc = new Scanner(System.in);
+			DriverManager.registerDriver(new OracleDriver());
+			System.out.println("Connecting to jdbc...");
+			String url = "jdbc:oracle:thin:@DESKTOP-7IB4LTB:1521:XE"; // "jdbc:oracle:thin:@localhost:1521"
+			String user = "system";
+			String pass = "Newuser123";
+			AccountDaoImpl.conn = DriverManager.getConnection(url,user,pass);
+			System.out.println("Connected to jdbc... connection: "+AccountDaoImpl.conn);
+			AccountDaoImpl adi = new AccountDaoImpl();
+			int c=-1;
+			do {
+				System.out.println("Choose the required option"
+						+ "\n1.Add an Account."
+						+ "\n2.Change Password"
+						+ "\n3.Withdraw from your account"
+						+ "\n4.Check Balance of all accounts"
+						+ "\n5.View All Account Details"
+						+ "\n6.Get details of an Account"
+						+ "\n7.Exit");
+				c = sc.nextInt();
+				if(c==1) {
+					System.out.println("Add an Account!");
+					System.out.println("Enter the Account Number!");
+					int acno=sc.nextInt();
+					System.out.println("Enter Account Balance");
+					double acbal=sc.nextDouble();
+					System.out.println("Set Account password");
+					String acp=sc.next();
+					adi.addAnAccount(new Account(acno,acbal,acp));
+				}
+				else if(c==2) {
+					System.out.println("Change Password!");
+					System.out.println("Enter the Account Number!");
+					int acno=sc.nextInt();
+					System.out.println("Enter Account password");
+					String op=sc.next();
+					System.out.println("Set New Account password");
+					String np=sc.next();
+					adi.changePassword(acno, op, np);
+				}
+				else if(c==3) {
+					System.out.println("Withdraw from your account");
+					System.out.println("Enter the Account Number!");
+					int acno=sc.nextInt();
+					System.out.println("Enter withdraw amount");
+					double wa=sc.nextDouble();
+					adi.withdraw(acno, wa);
+				}
+				else if(c==4) {
+					System.out.println("Check Balance of all accounts");
+					adi.checkBalance();
+				}
+				else if(c==5) {
+					System.out.println("View All Account Details");
+					ArrayList<Account> al = (ArrayList<Account>) adi.viewAllAccounts();
+					Iterator<Account> it = al.iterator();
+			        while(it.hasNext()){
+			            System.out.println(it.next());			            
+			        }
+				}
+				else if(c==6) {
+					System.out.println("Get details of an Account");
+					System.out.println("Enter the Account Number!");
+					int acno=sc.nextInt();
+					adi.getAccountDetails(acno);
+				}
+			}while(c!=7);
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+}
